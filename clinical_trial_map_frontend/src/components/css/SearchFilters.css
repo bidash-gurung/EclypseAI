@@ -103,6 +103,11 @@
   font: inherit;
   font-size: 12px;
 }
+.search-filters__control input:focus-visible,
+.search-filters__control select:focus-visible {
+  outline: 0;
+  outline-offset: 0;
+}
 .search-filters__control input {
   padding: 0 10px;
 }
