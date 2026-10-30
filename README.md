@@ -183,14 +183,14 @@ Create a local environment file by copying the example:
 Copy-Item .env.example .env
 ```
 
-On macOS or Linux, use `cp .env.example .env` instead. Set the backend values in `.env`:
+On macOS or Linux, use `cp .env.example .env` instead. Set the backend variables in `.env`; the values below are placeholders to replace with your local configuration:
 
 ```dotenv
-CLINICAL_TRIALS_API_URL=https://clinicaltrials.gov/api/v2/studies
-PORT=5000
-REDIS_URL=redis://localhost:6379
-OLLAMA_URL=http://localhost:11434
-OLLAMA_MODEL=qwen3.5:9b
+CLINICAL_TRIALS_API_URL=your-clinical-trials-api-url
+PORT=your-backend-port
+REDIS_URL=your-redis-connection-url
+OLLAMA_URL=your-ollama-url
+OLLAMA_MODEL=your-ollama-model
 ```
 
 Start Redis from the backend directory:
@@ -230,10 +230,10 @@ Copy the environment example:
 Copy-Item .env.example .env
 ```
 
-On macOS or Linux, use `cp .env.example .env`. Configure the backend URL:
+On macOS or Linux, use `cp .env.example .env`. Replace the frontend placeholder with your backend API base URL:
 
 ```dotenv
-VITE_API_BASE_URL=http://localhost:5000/api
+VITE_API_BASE_URL=your-backend-api-base-url
 ```
 
 Start the Vite development server:
@@ -249,10 +249,10 @@ Open the local URL printed by Vite, usually `http://localhost:5173`.
 | Variable                  | Application | Purpose                                                |
 | ------------------------- | ----------- | ------------------------------------------------------ |
 | `CLINICAL_TRIALS_API_URL` | Backend     | ClinicalTrials.gov API v2 studies endpoint.            |
-| `PORT`                    | Backend     | Express port; defaults to `5000` if unset.             |
+| `PORT`                    | Backend     | Optional Express listening port.             |
 | `REDIS_URL`               | Backend     | Redis connection URL.                                  |
-| `OLLAMA_URL`              | Backend     | Ollama endpoint; defaults to `http://localhost:11434`. |
-| `OLLAMA_MODEL`            | Backend     | Installed Ollama model; defaults to `qwen3.5:9b`.      |
+| `OLLAMA_URL`              | Backend     | Ollama service endpoint. |
+| `OLLAMA_MODEL`            | Backend     | Identifier for an installed Ollama model.      |
 | `VITE_API_BASE_URL`       | Frontend    | Backend API base URL, including `/api`.                |
 
 AI search requires Ollama to be running with the configured model available. The rest of the application does not use Ollama.
@@ -297,3 +297,7 @@ Trial search accepts page sizes from 1 to 1,000. Cluster details return at most 
 - Make map bucket precision adapt to zoom level and show more detailed grouping at closer zooms.
 - Add automated tests for sync recovery, indexing, filters, pagination, caching, and combined-phase analytics.
 - Add representative screenshots and a hosted demo link.
+
+
+
+
