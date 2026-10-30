@@ -1,0 +1,574 @@
+.clinical-map-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.clinical-map-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.clinical-map-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 8px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+}
+
+.clinical-map-heading h1 {
+  margin: 0;
+  font-size: clamp(24px, 3vw, 32px);
+}
+
+.clinical-map-heading p {
+  margin: 8px 0 0;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.clinical-map-heading-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  color: #0d9488;
+  background: #ccfbf1;
+  border-radius: 14px;
+}
+
+.clinical-map-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.clinical-map-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.clinical-map-stat span {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.clinical-map-stat strong {
+  color: #0f172a;
+  font-size: 25px;
+}
+.clinical-map-stat--skeleton {
+  justify-content: center;
+  gap: 12px;
+}
+.clinical-map-skeleton-line {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 6px;
+  background: #e9eef5;
+}
+.clinical-map-skeleton-line::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 15%,
+    rgb(255 255 255 / 75%) 48%,
+    transparent 82%
+  );
+  content: "";
+  transform: translateX(-100%);
+  animation: clinical-map-skeleton-shimmer 1.35s ease-in-out infinite;
+}
+.clinical-map-skeleton-line--label {
+  width: 74%;
+  height: 10px;
+}
+.clinical-map-skeleton-line--value {
+  width: 42%;
+  height: 24px;
+}
+@keyframes clinical-map-skeleton-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.clinical-map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 18px;
+  padding: 14px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+  font-size: 12px;
+}
+
+.clinical-map-legend > strong {
+  color: #334155;
+}
+
+.clinical-map-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #475569;
+}
+
+.clinical-map-legend-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.clinical-map-container {
+  position: relative;
+  overflow: hidden;
+  height: min(65vh, 620px);
+  min-height: 380px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #e2e8f0;
+}
+
+.clinical-map {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.clinical-map-loading,
+.clinical-map-error {
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+.clinical-map-loading {
+  color: #1d4ed8;
+  background: #eff6ff;
+}
+
+.clinical-map-error {
+  color: #b91c1c;
+  background: #fef2f2;
+}
+
+.clinical-map-empty {
+  position: absolute;
+  z-index: 500;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: min(340px, calc(100% - 32px));
+  padding: 24px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 8px 30px rgb(15 23 42 / 12%);
+  text-align: center;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.clinical-map-empty svg {
+  color: #0d9488;
+}
+
+.clinical-map-empty strong {
+  color: #0f172a;
+}
+
+.clinical-map-empty p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.clinical-map-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 20px;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.trial-map-popup {
+  min-width: 220px;
+  max-width: 300px;
+}
+
+.trial-map-popup-id {
+  color: #0d9488;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.trial-map-popup h3 {
+  margin: 7px 0 12px;
+  color: #0f172a;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.trial-map-popup p {
+  margin: 6px 0;
+  color: #475569;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.trial-map-details-button {
+  display: block;
+  width: 100%;
+  margin: 12px 0 8px;
+  padding: 9px 12px;
+  border: 0;
+  border-radius: 7px;
+  color: #ffffff;
+  background: #0f766e;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+}
+
+.trial-map-details-button:hover {
+  background: #115e59;
+}
+
+.trial-map-popup a {
+  color: #0f766e;
+  font-size: 12px;
+}
+
+.trial-map-popup .trial-map-official-link {
+  display: inline-flex;
+  width: 100%;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 10px;
+  padding: 8px 12px;
+  border: 1px solid #c9e6df;
+  border-radius: 8px;
+  color: #0f766e;
+  background: #effaf7;
+  font-weight: 650;
+  text-align: center;
+  text-decoration: none;
+  transition:
+    border-color 140ms ease,
+    color 140ms ease,
+    background-color 140ms ease;
+}
+
+.trial-map-popup .trial-map-official-link:hover {
+  border-color: #99d4c6;
+  color: #115e59;
+  background: #e0f5ef;
+}
+
+.dashboard[data-theme="dark"] .trial-map-popup .trial-map-official-link {
+  border-color: #35685e;
+  color: #a2e3d0;
+  background: #16322d;
+}
+
+.dashboard[data-theme="dark"] .trial-map-popup .trial-map-official-link:hover {
+  border-color: #4b8b7b;
+  color: #d0f7eb;
+  background: #1b4138;
+}
+
+.clinical-map-stats {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.clinical-map-stat--unmapped strong {
+  color: #b45309;
+}
+
+.leaflet-div-icon.clinical-site-pin-host,
+.leaflet-div-icon.clinical-site-cluster-host {
+  border: 0;
+  background: transparent;
+}
+
+.clinical-site-pin {
+  position: absolute;
+  top: 3px;
+  left: 5px;
+  width: 21px;
+  height: 21px;
+  border: 2px solid #fff;
+  border-radius: 50% 50% 50% 0;
+  background: var(--pin-color);
+  box-shadow: 0 2px 6px rgb(15 23 42 / 35%);
+  transform: rotate(-45deg);
+}
+
+.clinical-site-pin > span {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.clinical-site-cluster-host {
+  display: grid;
+  place-items: center;
+}
+
+.clinical-site-cluster {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  color: #fff;
+  background: #315bd6;
+  box-shadow: 0 2px 8px rgb(15 23 42 / 28%);
+  font-size: 12px;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+
+.clinical-map-unmapped {
+  padding: 14px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.clinical-map-unmapped summary {
+  color: #334155;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.clinical-map-unmapped > p {
+  margin: 9px 0 0;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.clinical-map-unmapped ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 20px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.clinical-map-unmapped li {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+  padding: 9px 0;
+  border-top: 1px solid #edf0f4;
+}
+
+.clinical-map-unmapped li > span {
+  overflow: hidden;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.clinical-map-unmapped li > small {
+  overflow: hidden;
+  color: #7b8798;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.clinical-map-unmapped .clinical-map-unmapped-more {
+  color: #64748b;
+  font-size: 11px;
+}
+
+@media (max-width: 700px) {
+  .clinical-map-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .clinical-map-container {
+    height: 480px;
+    min-height: 360px;
+  }
+
+  .clinical-map-heading-icon {
+    display: none;
+  }
+
+  .clinical-map-legend {
+    gap: 10px;
+  }
+
+  .clinical-map-unmapped ul {
+    grid-template-columns: 1fr;
+  }
+}
+
+.clinical-map-drilldown-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.clinical-map-drilldown-toolbar .trial-map-details-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.clinical-site-pin-host {
+  background: transparent;
+  border: none;
+}
+
+.clinical-site-pin {
+  position: relative;
+  display: block;
+  width: 24px;
+  height: 24px;
+  margin: 2px;
+  background: var(--pin-color);
+  border: 2px solid white;
+  border-radius: 50% 50% 50% 0;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 35%);
+  transform: rotate(-45deg);
+}
+
+.clinical-site-pin > span {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  top: 6px;
+  left: 6px;
+  border-radius: 50%;
+  background: white;
+}
+
+.clinical-site-cluster-host {
+  background: transparent;
+  border: none;
+}
+
+.clinical-site-cluster {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 3px solid white;
+  border-radius: 50%;
+  background: #0f766e;
+  color: white;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
+}
+
+.clinical-map-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 16px;
+  padding: 18px 20px;
+  border: 1px solid #dbe4e8;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.clinical-map-pagination-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.clinical-map-pagination-info strong {
+  color: #0f172a;
+  font-size: 14px;
+}
+
+.clinical-map-pagination-info span {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.clinical-map-pagination button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.clinical-map-pagination button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.clinical-map-spinner {
+  animation: clinical-map-spin 1s linear infinite;
+}
+
+@keyframes clinical-map-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 600px) {
+  .clinical-map-pagination {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .clinical-map-pagination button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clinical-map-skeleton-line::after {
+    animation: none;
+  }
+}
