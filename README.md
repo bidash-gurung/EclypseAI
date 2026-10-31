@@ -147,6 +147,7 @@ ClinTrial is a web application for searching, comparing, and mapping studies fro
     </mxGraphModel>
   </diagram>
 </mxfile>
+
 ```
 
 The backend starts the paginated import when the server starts, unless Redis already has the successful-import flag. The importer normalizes studies and stores each trial in Redis. After the import completes, run the separate index builder. Search, map, and analytics endpoints use the active Redis index version.
@@ -246,14 +247,14 @@ Open the local URL printed by Vite, usually `http://localhost:5173`.
 
 ### Environment Variables
 
-| Variable                  | Application | Purpose                                                |
-| ------------------------- | ----------- | ------------------------------------------------------ |
-| `CLINICAL_TRIALS_API_URL` | Backend     | ClinicalTrials.gov API v2 studies endpoint.            |
-| `PORT`                    | Backend     | Optional Express listening port.             |
-| `REDIS_URL`               | Backend     | Redis connection URL.                                  |
-| `OLLAMA_URL`              | Backend     | Ollama service endpoint. |
-| `OLLAMA_MODEL`            | Backend     | Identifier for an installed Ollama model.      |
-| `VITE_API_BASE_URL`       | Frontend    | Backend API base URL, including `/api`.                |
+| Variable                  | Application | Purpose                                     |
+| ------------------------- | ----------- | ------------------------------------------- |
+| `CLINICAL_TRIALS_API_URL` | Backend     | ClinicalTrials.gov API v2 studies endpoint. |
+| `PORT`                    | Backend     | Optional Express listening port.            |
+| `REDIS_URL`               | Backend     | Redis connection URL.                       |
+| `OLLAMA_URL`              | Backend     | Ollama service endpoint.                    |
+| `OLLAMA_MODEL`            | Backend     | Identifier for an installed Ollama model.   |
+| `VITE_API_BASE_URL`       | Frontend    | Backend API base URL, including `/api`.     |
 
 AI search requires Ollama to be running with the configured model available. The rest of the application does not use Ollama.
 
@@ -297,7 +298,3 @@ Trial search accepts page sizes from 1 to 1,000. Cluster details return at most 
 - Make map bucket precision adapt to zoom level and show more detailed grouping at closer zooms.
 - Add automated tests for sync recovery, indexing, filters, pagination, caching, and combined-phase analytics.
 - Add representative screenshots and a hosted demo link.
-
-
-
-

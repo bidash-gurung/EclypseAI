@@ -1,6 +1,8 @@
 :root {
   --border: #e7ebf1;
   --surface: #fff;
+  --button-primary: #0f766e;
+  --button-primary-hover: #115e59;
   --blue: #315bd6;
   --blue-dark: #2449bb;
 }
@@ -363,7 +365,7 @@
 }
 .dashboard-tab.active {
   border-color: #e1e7f0;
-  color: #284ab5;
+  color: var(--button-primary);
   background: #fff;
   box-shadow: 0 1px 3px rgb(24 39 75 / 8%);
 }

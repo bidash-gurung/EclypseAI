@@ -233,7 +233,7 @@ function createClusterIcon(cluster) {
   });
 }
 
-function ClinicalTrialMap({
+function ClinicalTrialMapContent({
   trials = [],
   mapData,
   onSelectTrial,
@@ -576,14 +576,14 @@ function ClinicalTrialMap({
         ) : drillDown ? (
           <>
             <div className="clinical-map-stat">
-              <span>Cluster sites</span>
+              <span>Sites in this cluster</span>
               <strong>
                 {(clusterDetails?.totalLocations ?? 0).toLocaleString()}
               </strong>
             </div>
 
             <div className="clinical-map-stat">
-              <span>Loaded site records</span>
+              <span>Site records on this page</span>
               <strong>{clusterDetails?.trials?.length ?? 0}</strong>
             </div>
 
@@ -935,4 +935,12 @@ function ClinicalTrialMap({
   );
 }
 
-export default ClinicalTrialMap;
+function getFilterKey(filters = {}) {
+  return JSON.stringify(
+    Object.fromEntries(Object.entries(filters || {}).sort(([left], [right]) => left.localeCompare(right))),
+  );
+}
+
+export default function ClinicalTrialMap(props) {
+  return <ClinicalTrialMapContent key={getFilterKey(props.filters)} {...props} />;
+}
