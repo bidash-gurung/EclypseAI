@@ -18,15 +18,22 @@ export default function SearchFilters({
   onSearch,
   onReset,
   loading,
+  yearRange,
+  yearRangeLoading,
+  yearRangeError,
 }) {
   const [statusOptions, setStatusOptions] = useState([]);
   const [phaseOptions, setPhaseOptions] = useState([]);
   const [optionsLoading, setOptionsLoading] = useState(true);
   const [optionsError, setOptionsError] = useState("");
   const [countryOptions, setCountryOptions] = useState([]);
+  const [countryOptionsError, setCountryOptionsError] = useState("");
+  const [countryOptionsLoading, setCountryOptionsLoading] = useState(true);
   useEffect(() => {
     const controller = new AbortController();
     async function fetchCountries() {
+      setCountryOptionsLoading(true);
+      setCountryOptionsError("");
       try {
         const response = await fetch(API_URLS.countries, {
           signal: controller.signal,
@@ -46,7 +53,10 @@ export default function SearchFilters({
       } catch (error) {
         if (error.name !== "AbortError") {
           console.error("Failed to load countries:", error);
+          setCountryOptionsError("Country suggestions couldn't be loaded. You can still type a country name.");
         }
+      } finally {
+        if (!controller.signal.aborted) setCountryOptionsLoading(false);
       }
     }
     async function fetchEnums() {
@@ -100,6 +110,24 @@ export default function SearchFilters({
       controller.abort();
     };
   }, []);
+
+  async function handleRetryCountries() {
+    setCountryOptionsLoading(true);
+    setCountryOptionsError("");
+    try {
+      const response = await fetch(API_URLS.countries);
+      const result = await response.json();
+      if (!response.ok || !result.success || !Array.isArray(result.countries)) {
+        throw new Error("Country suggestions are unavailable.");
+      }
+      setCountryOptions(result.countries);
+    } catch (error) {
+      console.error("Error retrying country suggestions:", error);
+      setCountryOptionsError("Country suggestions couldn't be loaded. You can still type a country name.");
+    } finally {
+      setCountryOptionsLoading(false);
+    }
+  }
 
   async function handleRetryOptions() {
     try {
@@ -164,6 +192,7 @@ export default function SearchFilters({
       </div>
 
       <form
+        noValidate
         onSubmit={(event) => {
           event.preventDefault();
           onSearch(event);
@@ -285,11 +314,12 @@ export default function SearchFilters({
               <input
                 type="number"
                 name="startYear"
-                min="1900"
-                max="2100"
+                min={yearRange?.minYear}
+                max={yearRange?.maxYear}
                 value={filters.startYear ?? ""}
                 onChange={onChange}
-                placeholder="e.g. 2020"
+                placeholder={yearRange ? `e.g. ${yearRange.minYear}` : "Loading years"}
+                aria-describedby="year-range-hint"
               />
             </div>
           </label>
@@ -304,15 +334,37 @@ export default function SearchFilters({
               <input
                 type="number"
                 name="endYear"
-                min="1900"
-                max="2100"
+                min={yearRange?.minYear}
+                max={yearRange?.maxYear}
                 value={filters.endYear ?? ""}
                 onChange={onChange}
-                placeholder="e.g. 2025"
+                placeholder={yearRange ? `e.g. ${yearRange.maxYear}` : "Loading years"}
+                aria-describedby="year-range-hint"
               />
             </div>
           </label>
         </div>
+
+        {countryOptionsError && (
+          <div className="search-filters__status-error" role="status">
+            <span>{countryOptionsError}</span>
+            <button
+              type="button"
+              onClick={handleRetryCountries}
+              disabled={countryOptionsLoading}
+            >
+              {countryOptionsLoading ? "Retrying..." : "Retry suggestions"}
+            </button>
+          </div>
+        )}
+
+        <p className="search-filters__year-hint" id="year-range-hint" role={yearRangeError ? "status" : undefined}>
+          {yearRange
+            ? `Available study years: ${yearRange.minYear}–${yearRange.maxYear}.`
+            : yearRangeLoading
+              ? "Loading available study years…"
+              : yearRangeError || "Available study years could not be loaded."}
+        </p>
 
         {optionsError && (
           <div className="search-filters__status-error" role="alert">

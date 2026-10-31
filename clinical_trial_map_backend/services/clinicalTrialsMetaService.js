@@ -31,7 +31,8 @@ async function fetchClinicalTrialsEndpoint(path = "") {
   } catch (error) {
     console.warn("Redis cache read failed:", error.message);
   }
-
+  // AbortController allows you to cancel a request.
+  // If ClinicalTrials.gov takes longer than 10 seconds, the request gets aborted instead of hanging indefinitely.
   const controller = new AbortController();
 
   const timeoutId = setTimeout(() => {
@@ -106,7 +107,24 @@ async function getClinicalTrialEnums() {
   return enumGroups;
 }
 
+async function getStartDateRange() {
+  const response = await fetchClinicalTrialsEndpoint(
+    "stats/field/values?fields=StartDate",
+  );
+
+  const startDateField = response.find((item) => item.piece === "StartDate");
+
+  if (!startDateField || !startDateField.min || !startDateField.max) {
+    throw new Error("StartDate range was not found.");
+  }
+
+  return {
+    minYear: Number(startDateField.min.slice(0, 4)),
+    maxYear: Number(startDateField.max.slice(0, 4)),
+  };
+}
 module.exports = {
   fetchClinicalTrialsEndpoint,
   getClinicalTrialEnums,
+  getStartDateRange,
 };

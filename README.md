@@ -290,7 +290,32 @@ Trial search accepts page sizes from 1 to 1,000. Cluster details return at most 
 - **Import and indexes:** The initial dataset import is large and runs separately from index building. Indexes must be built after a successful import. The importer skips future full imports once Redis marks the dataset complete; an incremental refresh workflow is not currently provided.
 - **AI dependency:** Natural-language search depends on a reachable Ollama server and an installed model. It is optional and is not needed for standard search, map, or analytics features.
 
-## 8. Future Improvements
+## 8. AI Tools Usage
+
+### AI Tools Used
+
+- **ChatGPT:** Used as a development assistant throughout the project for requirement analysis, technical guidance, problem-solving, and documentation.
+- **Ollama (Qwen 3.5 – 9B):** Integrated a locally hosted, pre-trained Large Language Model (LLM) into the application to enable AI-powered natural-language clinical trial search.
+
+### Areas of AI Assistance
+
+- **Use Case Understanding:** Used ChatGPT to understand the project requirements, identify the core functionalities, and determine the APIs and integrations needed.
+- **Requirement Analysis:** Explored different implementation approaches and broke down complex requirements into manageable development tasks.
+- **Technical Guidance:** Discussed suitable technologies, libraries, tools, and architectural approaches for implementing specific functionalities.
+- **Code Assistance:** Consulted ChatGPT for code examples, implementation guidance, and explanations of unfamiliar or complex code.
+- **Debugging and Problem-Solving:** Used ChatGPT to analyze errors, investigate potential causes, and explore alternative solutions.
+- **Database and Performance:** Explored approaches to data indexing, Redis caching, pagination, and efficient handling of large datasets.
+- **Documentation and Presentation:** Assisted in structuring technical documentation, preparing the README, and explaining architectural and technical decisions.
+
+### Actual AI Implementation
+
+- Integrated Ollama with the Qwen 3.5 (9B) pre-trained model.
+- Implemented natural-language query processing to interpret user search requests.
+- Converted AI-interpreted queries into structured search parameters.
+- Connected the generated parameters to the existing backend search functionality.
+- Designed AI search as an optional feature, allowing users to continue using standard search functionality independently.
+
+## 9. Future Improvements
 
 - Add an incremental or scheduled data refresh and a documented way to rebuild the dataset safely.
 - Trigger index building automatically after a successful import, with progress and failure status exposed to the UI.
@@ -298,3 +323,4 @@ Trial search accepts page sizes from 1 to 1,000. Cluster details return at most 
 - Make map bucket precision adapt to zoom level and show more detailed grouping at closer zooms.
 - Add automated tests for sync recovery, indexing, filters, pagination, caching, and combined-phase analytics.
 - Add representative screenshots and a hosted demo link.
+

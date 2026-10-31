@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import "leaflet/dist/leaflet.css";
 import "./css/ClinicalTrialMap.css";
+import { userFacingError } from "./userFacingErrors";
 
 const DEFAULT_CENTER = [20, 0];
 const DEFAULT_ZOOM = 2;
@@ -383,7 +384,7 @@ function ClinicalTrialMapContent({
   // Fetch one page of locations. Append subsequent pages to the existing data.
   async function fetchClusterPage(point, offset, append) {
     if (!clusterDetailsUrl) {
-      setClusterError("Cluster details API URL is not configured.");
+      setClusterError("Location details aren't available right now. Please try again later.");
       return;
     }
 
@@ -424,7 +425,7 @@ function ClinicalTrialMapContent({
       const data = await response.json();
 
       if (!response.ok || !data.success) {
-        throw new Error(data.message || "Unable to load cluster details.");
+        throw new Error(userFacingError(data.message, "We couldn't load location details. Please try again."));
       }
 
       // Ignore results from a cluster that is no longer selected.
@@ -480,7 +481,7 @@ function ClinicalTrialMapContent({
       });
     } catch (err) {
       if (currentRequest === requestVersion.current) {
-        setClusterError(err.message || "Unable to load cluster details.");
+        setClusterError(userFacingError(err.message, "We couldn't load location details. Please try again."));
       }
     } finally {
       if (currentRequest === requestVersion.current) {

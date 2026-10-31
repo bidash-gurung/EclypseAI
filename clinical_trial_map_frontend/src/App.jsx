@@ -21,6 +21,7 @@ import AnalyticsDashboard from "./components/AnalyticsDashboard";
 import { formatDate, formatStatus } from "./components/trialFormatters";
 import ClinicalTrialMap from "./components/ClinicalTrialMap";
 import AIWorkspace from "./components/AIWorkspace";
+import { userFacingError } from "./components/userFacingErrors";
 import { API_URLS } from "./config/api";
 
 import "./App.css";
@@ -111,6 +112,9 @@ function App() {
   const [theme, setTheme] = useState(getInitialTheme);
   const [showSplash, setShowSplash] = useState(true);
   const [apiVersion, setApiVersion] = useState("");
+  const [yearRange, setYearRange] = useState(null);
+  const [yearRangeLoading, setYearRangeLoading] = useState(true);
+  const [yearRangeError, setYearRangeError] = useState("");
 
   const [sidebarOpen, setSidebarOpen] = useState(() =>
     typeof window === "undefined"
@@ -188,6 +192,35 @@ function App() {
     }
 
     loadApiVersion();
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadYearRange() {
+      setYearRangeLoading(true);
+      setYearRangeError("");
+      try {
+        const response = await fetch(API_URLS.yearRange, {
+          signal: controller.signal,
+        });
+        const result = await response.json();
+        const { minYear, maxYear } = result.data || {};
+        if (!response.ok || !result.success || !Number.isInteger(minYear) || !Number.isInteger(maxYear) || minYear > maxYear) {
+          throw new Error("Could not load the available study year range.");
+        }
+        setYearRange({ minYear, maxYear });
+      } catch (err) {
+        if (err.name !== "AbortError") {
+          setYearRangeError("Year limits are temporarily unavailable. Please try again shortly.");
+        }
+      } finally {
+        if (!controller.signal.aborted) setYearRangeLoading(false);
+      }
+    }
+
+    loadYearRange();
     return () => controller.abort();
   }, []);
 
@@ -308,7 +341,7 @@ function App() {
 
         if (!response.ok || !data.success) {
           throw new Error(
-            data.message || `Map request failed: ${response.status}`,
+            userFacingError(data.message, "We couldn't load map data. Please try again."),
           );
         }
 
@@ -322,7 +355,7 @@ function App() {
         }
       } catch (err) {
         if (err.name !== "AbortError" && requestId === mapRequestId.current) {
-          setMapError(err.message || "Unable to load map data.");
+          setMapError(userFacingError(err.message, "We couldn't load map data. Please try again."));
         }
       } finally {
         if (requestId === mapRequestId.current) {
@@ -371,13 +404,14 @@ function App() {
       const response = await fetch(`${API_URL}?${params.toString()}`);
 
       if (!response.ok) {
-        throw new Error(`The server returned ${response.status}.`);
+        const data = await response.json().catch(() => ({}));
+        throw new Error(userFacingError(data.message, "We couldn't load clinical studies. Please try again."));
       }
 
       const data = await response.json();
 
       if (!data.success) {
-        throw new Error(data.message || "Unable to load clinical trials.");
+        throw new Error(userFacingError(data.message, "We couldn't load clinical studies. Please try again."));
       }
 
       setTrials(data.trials || []);
@@ -387,9 +421,7 @@ function App() {
 
       return data;
     } catch (err) {
-      setError(
-        `${err.message} Check that your backend is running on port 5000.`,
-      );
+      setError(userFacingError(err.message, "We couldn't load clinical studies. Please try again."));
 
       setTrials([]);
       setTotalCount(0);
@@ -437,7 +469,7 @@ function App() {
       const result = await response.json();
 
       if (!response.ok || !result.success) {
-        throw new Error(result.message || `Request failed: ${response.status}`);
+        throw new Error(userFacingError(result.message, "We couldn't load analytics. Please try again."));
       }
 
       if (requestId === analyticsRequestId.current) {
@@ -445,7 +477,7 @@ function App() {
       }
     } catch (err) {
       if (requestId === analyticsRequestId.current) {
-        setAnalyticsError(err.message || "Unable to load analytics.");
+        setAnalyticsError(userFacingError(err.message, "We couldn't load analytics. Please try again."));
       }
     } finally {
       if (requestId === analyticsRequestId.current) {
@@ -457,15 +489,43 @@ function App() {
   function handleSearch(event) {
     event.preventDefault();
 
-    if (filters.endYear && !filters.startYear) {
+    const startYear = filters.startYear.trim();
+    const endYear = filters.endYear.trim();
+
+    if ((startYear || endYear) && yearRangeLoading) {
+      setError("Year limits are still loading. Please try again in a moment.");
+      return;
+    }
+
+    if ((startYear || endYear) && !yearRange) {
+      setError(yearRangeError || "Year limits are temporarily unavailable. Please try again shortly.");
+      return;
+    }
+
+    if (startYear && !/^\d{4}$/.test(startYear)) {
+      setError("Enter the start year as a four-digit year.");
+      return;
+    }
+
+    if (endYear && !/^\d{4}$/.test(endYear)) {
+      setError("Enter the end year as a four-digit year.");
+      return;
+    }
+
+    if (yearRange && [startYear, endYear].filter(Boolean).some((year) => Number(year) < yearRange.minYear || Number(year) > yearRange.maxYear)) {
+      setError(`Enter a year between ${yearRange.minYear} and ${yearRange.maxYear}.`);
+      return;
+    }
+
+    if (endYear && !startYear) {
       setError("Enter a start year when you specify an end year.");
       return;
     }
 
     if (
-      filters.startYear &&
-      filters.endYear &&
-      Number(filters.endYear) < Number(filters.startYear)
+      startYear &&
+      endYear &&
+      Number(endYear) < Number(startYear)
     ) {
       setError(
         "The end year must be the same as or later than the start year.",
@@ -701,6 +761,9 @@ function App() {
               onSearch={handleSearch}
               onReset={resetFilters}
               loading={loading || analyticsLoading || mapLoading}
+              yearRange={yearRange}
+              yearRangeLoading={yearRangeLoading}
+              yearRangeError={yearRangeError}
             />
           )}
 

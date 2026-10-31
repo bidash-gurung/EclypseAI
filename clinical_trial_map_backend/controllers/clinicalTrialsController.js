@@ -1,7 +1,19 @@
 const { searchTrials } = require("../services/clinicalTrialsService");
-
+const { getStartDateRange } = require("../services/clinicalTrialsMetaService");
 const { validateTrialFilters } = require("../utils/validateTrialFilters");
-function getYear(value) {
+// function getYear(value) {
+//   if (value === undefined || value === "") return null;
+
+//   if (typeof value !== "string" || !/^\d{4}$/.test(value)) {
+//     return NaN;
+//   }
+
+//   const year = Number(value);
+
+//   return year >= 1900 && year <= 2100 ? year : NaN;
+// }
+
+function getYear(value, minYear, maxYear) {
   if (value === undefined || value === "") return null;
 
   if (typeof value !== "string" || !/^\d{4}$/.test(value)) {
@@ -10,13 +22,14 @@ function getYear(value) {
 
   const year = Number(value);
 
-  return year >= 1900 && year <= 2100 ? year : NaN;
+  return year >= minYear && year <= maxYear ? year : NaN;
 }
-
 // Find an enum group, such as Status or Phase, and return its accepted values.
 
 async function getTrials(req, res) {
   try {
+    const { minYear, maxYear } = await getStartDateRange();
+    console.log(`StartDate range: ${minYear} - ${maxYear}`);
     const {
       condition = "",
       drug = "",
@@ -60,6 +73,7 @@ async function getTrials(req, res) {
     }
 
     // Validate status and phase using the shared validation utility.
+    //validateTrialFilters will return true or false
     const validation = await validateTrialFilters({
       status: status.trim(),
       phase: phase.trim(),
@@ -76,14 +90,14 @@ async function getTrials(req, res) {
 
     // Validate page size.
     if (
-      typeof pageSize !== "string" ||
-      !/^\d+$/.test(pageSize) ||
-      Number(pageSize) < 1 ||
-      Number(pageSize) > 1000
+      typeof pageSize !== "string" || //check if pageSize is a string
+      !/^\d+$/.test(pageSize) || //check if pageSize is a number
+      Number(pageSize) < 1 || //check if pageSize is less than 1
+      Number(pageSize) > 1000 //check if pageSize is greater than 1000
     ) {
       return res.status(400).json({
         success: false,
-        message: "pageSize must be an integer between 1 and 100.",
+        message: "pageSize must be an integer between 1 and 1000.",
       });
     }
 
@@ -103,26 +117,34 @@ async function getTrials(req, res) {
     }
 
     // Validate the requested year range.
-    const start = getYear(startYear);
-    const startFrom = getYear(startYearFrom);
-    const end = getYear(endYear);
+    const start = getYear(startYear, minYear, maxYear);
+    const startFrom = getYear(startYearFrom, minYear, maxYear);
+    const end = getYear(endYear, minYear, maxYear);
 
     if (Number.isNaN(start) || Number.isNaN(startFrom) || Number.isNaN(end)) {
       return res.status(400).json({
         success: false,
-        message: "Years must be four-digit values between 1900 and 2100.",
+        message: `Years must be four-digit values between ${minYear} and ${maxYear}.`,
       });
     }
 
-
     if (start !== null && end !== null && start > end) {
-      return res.status(400).json({ success: false, message: "startYear cannot be greater than endYear." });
+      return res.status(400).json({
+        success: false,
+        message: "startYear cannot be greater than endYear.",
+      });
     }
     if (start !== null && startFrom !== null) {
-      return res.status(400).json({ success: false, message: "Use either startYear or startYearFrom, not both." });
+      return res.status(400).json({
+        success: false,
+        message: "Use either startYear or startYearFrom, not both.",
+      });
     }
     if (startFrom !== null && end !== null && startFrom > end) {
-      return res.status(400).json({ success: false, message: "startYearFrom cannot be greater than endYear." });
+      return res.status(400).json({
+        success: false,
+        message: "startYearFrom cannot be greater than endYear.",
+      });
     }
 
     const filters = {

@@ -5,6 +5,7 @@ import TrialsTable from "./TrialsTable";
 import ClinicalTrialMap from "./ClinicalTrialMap";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { API_URLS } from "../config/api";
+import { userFacingError } from "./userFacingErrors";
 import "./css/AIWorkspace.css";
 
 const PAGE_SIZE = 20;
@@ -153,12 +154,12 @@ export default function AIWorkspace({ isActive, onSelectTrial }) {
       const response = await fetch(`${API_URLS.analytics}?${params.toString()}`);
       const data = await response.json();
       if (!response.ok || !data.success) {
-        throw new Error(data.message || `Analytics request failed: ${response.status}`);
+        throw new Error(userFacingError(data.message, "We couldn't load analytics for this search. Please try again."));
       }
       setAnalyticsData(data);
       return data;
     } catch (requestError) {
-      setAnalyticsError(requestError.message || "Unable to load analytics for this search.");
+      setAnalyticsError(userFacingError(requestError.message, "We couldn't load analytics for this search. Please try again."));
       return null;
     } finally {
       setAnalyticsLoading(false);
@@ -222,7 +223,7 @@ export default function AIWorkspace({ isActive, onSelectTrial }) {
       });
       const data = await response.json();
       if (!response.ok || !data.success) {
-        throw new Error(data.message || `AI search failed: ${response.status}`);
+        throw new Error(data.message || "I couldn't complete that search. Please try again.");
       }
 
       const presentation = data.presentation || "count";
@@ -240,8 +241,8 @@ export default function AIWorkspace({ isActive, onSelectTrial }) {
       setMessages((current) => current.map((message) => message.id === answerId
         ? { ...message, content: data.answer || "I could not produce an answer from the available trial data.", pending: false, showViewOptions: presentation === "count" && data.queryPlan?.task !== "unsupported" }
         : message));
-    } catch {
-      const message = "I could not complete that search. Please try again.";
+    } catch (error) {
+      const message = userFacingError(error?.message, "I couldn't complete that search. Please try again.");
       setError("");
       setMessages((current) => current.map((item) => item.id === answerId
         ? { ...item, content: message, pending: false, failed: true }
@@ -273,11 +274,11 @@ export default function AIWorkspace({ isActive, onSelectTrial }) {
         }),
       });
       const data = await response.json();
-      if (!response.ok || !data.success) throw new Error(data.message || "Unable to load more studies.");
+      if (!response.ok || !data.success) throw new Error(userFacingError(data.message, "We couldn't load more studies. Please try again."));
       setResult(data);
       setTrials((current) => [...current, ...(data.trials || [])]);
     } catch (requestError) {
-      setError(requestError.message || "Unable to load more studies.");
+      setError(userFacingError(requestError.message, "We couldn't load more studies. Please try again."));
     } finally {
       setLoading(false);
     }

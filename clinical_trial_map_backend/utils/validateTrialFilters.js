@@ -22,6 +22,10 @@ async function validateTrialFilters({ status = "", phase = "" }) {
     return { valid: true };
   }
 
+  //it is important to fetch the enums from the ClinicalTrials.gov API to
+  // ensure that the validation is based on the most up-to-date information.
+  //  This way, if there are any changes in the allowed values for status
+  // or phase, the validation will still be accurate.
   const enumGroups = await getClinicalTrialEnums();
 
   if (status) {
